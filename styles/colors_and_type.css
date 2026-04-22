@@ -1,0 +1,314 @@
+/* =========================================================
+   TrailFreaks — Colors & Type
+   =========================================================
+   Source of truth for design tokens: derived from the iOS app
+   screenshots (primary: orange + forest green on sage ground)
+   and the marketing landing page (Barlow Condensed display
+   treatment).
+
+   ROLES
+   - Orange is the PRIMARY accent (active states, values,
+     tracks on maps, CTAs in the marketing site).
+   - Forest green is the SECONDARY brand color (primary
+     buttons in-app, trust/safe states, map overlays).
+   - Earth/bark is tertiary — used sparingly on marketing.
+   ========================================================= */
+
+:root {
+  /* ── CORE BRAND ─────────────────────────────────────── */
+  /* Orange / Vermilion — primary accent from the iOS app  */
+  --tf-orange:         #E85A2B;
+  --tf-orange-hot:     #F26A38;
+  --tf-orange-deep:    #C94819;
+  --tf-orange-soft:    #F8C8B2;
+  --tf-orange-pale:    #FCE7DA;
+  --tf-orange-wash:    rgba(232,90,43,0.08);
+
+  /* Forest Green — primary from marketing, secondary in-app */
+  --tf-green:          #2A6442;
+  --tf-green-mid:      #3A8056;
+  --tf-green-light:    #5EA070;
+  --tf-green-pale:     #9DC4AC;
+  --tf-green-soft:     #C4DDD0;
+  --tf-green-wash:     rgba(42,100,66,0.07);
+  --tf-green-wash-2:   rgba(42,100,66,0.13);
+  --tf-forest:         #162C1E;
+  --tf-moss:           #3C5A34;
+
+  /* Earth / Bark — tertiary accent (marketing decorative) */
+  --tf-earth:          #8A5A38;
+  --tf-earth-mid:      #A87248;
+  --tf-earth-light:    #C89A72;
+  --tf-earth-pale:     #E0C0A0;
+  --tf-earth-soft:     #EED8C0;
+
+  /* Sage / Stone — atmospheric neutrals */
+  --tf-sage:           #587860;
+  --tf-sage-light:     #82A08A;
+  --tf-sage-pale:      #B0C8B8;
+  --tf-stone:          #747870;
+  --tf-stone-light:    #98A098;
+
+  /* ── SURFACES ───────────────────────────────────────── */
+  /* App uses a warmer, slightly greener ground than        */
+  /* marketing. Both are exposed so you can pick.           */
+  --tf-bg-app:         #E8EBE3;   /* iOS app base */
+  --tf-bg-app-2:       #DEE3D9;   /* app card bg */
+  --tf-bg:             #F1F4EE;   /* marketing base */
+  --tf-bg-2:           #E6EBE1;
+  --tf-bg-3:           #DAE1D4;
+  --tf-card:           #FAFBF8;
+  --tf-card-2:         #F0F3EC;
+  --tf-input:          #DDE3D6;   /* filled input in-app */
+  --tf-white:          #FFFFFF;
+
+  /* ── TEXT ───────────────────────────────────────────── */
+  --tf-text:           #181E14;   /* near-black, warm */
+  --tf-text-dim:       #2E3828;
+  --tf-text-mid:       #4C5A48;
+  --tf-text-muted:     #6C7868;
+  --tf-text-light:     #909E8C;
+  --tf-text-inverse:   #FAFBF8;
+
+  /* ── SEMANTIC — TRAIL DIFFICULTY ────────────────────── */
+  /* Matches the app's difficulty pills.                   */
+  --tf-diff-easy:      #2A6442;  /* green */
+  --tf-diff-moderate:  #2E6EC2;  /* blue */
+  --tf-diff-hard:      #C93A2C;  /* red */
+  --tf-diff-extreme:   #1A1A1A;  /* black */
+  --tf-diff-expert:    #5A2880;  /* purple (reserved) */
+
+  /* ── SEMANTIC — STATE / SIGNAL ──────────────────────── */
+  --tf-success:        #2A6442;
+  --tf-warn:           #C07028;
+  --tf-error:          #C93A2C;
+  --tf-info:           #2E6EC2;
+  --tf-live:           #E85A2B;   /* radar / recording */
+
+  /* ── BORDERS ────────────────────────────────────────── */
+  --tf-border:         #CAD4C4;
+  --tf-border-mid:     #B6C2B0;
+  --tf-border-hi:      #A0AE9A;
+  --tf-border-input:   #C6CEBD;
+
+  /* ── ELEVATION ──────────────────────────────────────── */
+  --tf-shadow-xs:      0 1px 2px rgba(24,30,20,0.04);
+  --tf-shadow-sm:      0 2px 10px rgba(24,30,20,0.06);
+  --tf-shadow-md:      0 8px 28px rgba(24,30,20,0.09);
+  --tf-shadow-lg:      0 24px 60px rgba(24,30,20,0.14);
+  --tf-shadow-pop:     0 16px 40px rgba(232,90,43,0.22);
+
+  /* ── RADII ──────────────────────────────────────────── */
+  --tf-r-xs:   4px;
+  --tf-r-sm:   8px;
+  --tf-r-md:   12px;
+  --tf-r-lg:   16px;
+  --tf-r-xl:   20px;
+  --tf-r-2xl:  28px;
+  --tf-r-pill: 999px;
+
+  /* ── SPACING (8-pt grid) ────────────────────────────── */
+  --tf-s-0:  0;
+  --tf-s-1:  4px;
+  --tf-s-2:  8px;
+  --tf-s-3:  12px;
+  --tf-s-4:  16px;
+  --tf-s-5:  20px;
+  --tf-s-6:  24px;
+  --tf-s-8:  32px;
+  --tf-s-10: 40px;
+  --tf-s-12: 48px;
+  --tf-s-16: 64px;
+  --tf-s-20: 80px;
+
+  /* ── MOTION ─────────────────────────────────────────── */
+  --tf-ease:           cubic-bezier(.2,.7,.2,1);
+  --tf-ease-out:       cubic-bezier(.16,1,.3,1);
+  --tf-dur-fast:       0.15s;
+  --tf-dur:            0.25s;
+  --tf-dur-slow:       0.45s;
+
+  /* =========================================================
+     TYPOGRAPHY
+     Display / headline:  Barlow Condensed (700/800) — marketing
+     Body / UI:           Barlow (300/400/500/600) — marketing
+     App UI:              SF Pro / system-ui — matches native iOS
+     Mono labels:         IBM Plex Mono — kickers, metadata
+     ========================================================= */
+
+  --tf-font-display:  'Barlow Condensed', 'Oswald', 'Impact', sans-serif;
+  --tf-font-body:     'Barlow', -apple-system, 'Segoe UI', sans-serif;
+  --tf-font-app:      -apple-system, BlinkMacSystemFont, 'SF Pro Display',
+                      'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+  --tf-font-mono:     'IBM Plex Mono', ui-monospace, 'Menlo', monospace;
+
+  /* Type scale (marketing) */
+  --tf-fs-xs:   10px;   /* mono kickers */
+  --tf-fs-sm:   12px;
+  --tf-fs-base: 15px;
+  --tf-fs-md:   17px;
+  --tf-fs-lg:   20px;
+  --tf-fs-xl:   24px;
+  --tf-fs-2xl:  32px;
+  --tf-fs-3xl:  44px;
+  --tf-fs-4xl:  60px;
+  --tf-fs-5xl:  88px;
+  --tf-fs-6xl:  110px;
+
+  /* Line heights */
+  --tf-lh-tight:  0.95;
+  --tf-lh-snug:   1.2;
+  --tf-lh-normal: 1.55;
+  --tf-lh-loose:  1.75;
+
+  /* Letter-spacing */
+  --tf-ls-tight:   -0.02em;
+  --tf-ls-normal:  0;
+  --tf-ls-wide:    0.03em;
+  --tf-ls-wider:   0.09em;
+  --tf-ls-widest:  0.15em;   /* mono kicker caps */
+}
+
+/* =========================================================
+   SEMANTIC TYPE CLASSES
+   Attach to elements directly, e.g. <h1 class="tf-h1">
+   ========================================================= */
+
+.tf-display {
+  font-family: var(--tf-font-display);
+  font-weight: 800;
+  font-size: clamp(60px, 8vw, var(--tf-fs-6xl));
+  line-height: var(--tf-lh-tight);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--tf-text);
+}
+
+.tf-h1 {
+  font-family: var(--tf-font-display);
+  font-weight: 800;
+  font-size: clamp(36px, 4.5vw, var(--tf-fs-4xl));
+  line-height: var(--tf-lh-tight);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--tf-text);
+}
+
+.tf-h2 {
+  font-family: var(--tf-font-display);
+  font-weight: 700;
+  font-size: var(--tf-fs-2xl);
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--tf-text);
+}
+
+.tf-h3 {
+  font-family: var(--tf-font-display);
+  font-weight: 700;
+  font-size: var(--tf-fs-xl);
+  line-height: 1.15;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  color: var(--tf-text);
+}
+
+.tf-subhead {
+  font-family: var(--tf-font-display);
+  font-weight: 600;
+  font-style: italic;
+  font-size: clamp(18px, 2.5vw, var(--tf-fs-2xl));
+  line-height: 1.05;
+  color: var(--tf-text-mid);
+  text-transform: uppercase;
+}
+
+.tf-p {
+  font-family: var(--tf-font-body);
+  font-weight: 300;
+  font-size: var(--tf-fs-base);
+  line-height: var(--tf-lh-loose);
+  color: var(--tf-text-mid);
+}
+
+.tf-p-sm {
+  font-family: var(--tf-font-body);
+  font-weight: 300;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--tf-text-muted);
+}
+
+/* Monospace kicker / label — the brand's signature */
+.tf-kicker {
+  font-family: var(--tf-font-mono);
+  font-size: var(--tf-fs-xs);
+  font-weight: 500;
+  letter-spacing: var(--tf-ls-widest);
+  text-transform: uppercase;
+  color: var(--tf-stone);
+}
+
+.tf-meta {
+  font-family: var(--tf-font-mono);
+  font-size: 9px;
+  letter-spacing: var(--tf-ls-wider);
+  text-transform: uppercase;
+  color: var(--tf-text-light);
+}
+
+/* Numeric values — distance, ascent, descent */
+.tf-stat {
+  font-family: var(--tf-font-app);
+  font-weight: 800;
+  font-size: 28px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--tf-text);
+}
+.tf-stat-unit {
+  font-family: var(--tf-font-app);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--tf-text-muted);
+  margin-left: 2px;
+}
+
+/* App UI text — use this inside mobile mockups */
+.tf-app-title {
+  font-family: var(--tf-font-app);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--tf-text);
+}
+.tf-app-h {
+  font-family: var(--tf-font-app);
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--tf-text);
+}
+.tf-app-body {
+  font-family: var(--tf-font-app);
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--tf-text-mid);
+}
+
+/* =========================================================
+   UTILITY
+   ========================================================= */
+.tf-mono        { font-family: var(--tf-font-mono); }
+.tf-display-f   { font-family: var(--tf-font-display); }
+.tf-body-f      { font-family: var(--tf-font-body); }
+.tf-app-f       { font-family: var(--tf-font-app); }
+
+.tf-text        { color: var(--tf-text); }
+.tf-text-mid    { color: var(--tf-text-mid); }
+.tf-text-muted  { color: var(--tf-text-muted); }
+.tf-text-light  { color: var(--tf-text-light); }
+
+.tf-bg-app      { background: var(--tf-bg-app); }
+.tf-bg          { background: var(--tf-bg); }
+.tf-bg-card     { background: var(--tf-card); }

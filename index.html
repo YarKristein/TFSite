@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrailFreaks — Find Trails. Find Your Crew.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Barlow:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/colors_and_type.css">
+<link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
+<link rel="apple-touch-icon" href="assets/app-icon.png">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--tf-font-body);font-weight:300;background:var(--tf-bg);color:var(--tf-text);
+    overflow-x:hidden;-webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--tf-orange);color:#fff}
+  img{display:block;max-width:100%}
+  a{color:inherit}
+
+  /* Grain */
+  body::after{
+    content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opacity:0.028;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  .wrap{max-width:1280px;margin:0 auto;padding:0 40px}
+  .wrap-wide{max-width:1440px;margin:0 auto;padding:0 40px}
+
+  /* ═════ REUSABLE iOS FRAME ════════════════════════════
+     The screenshots already include status bar + rounded
+     corners (iPhone 15 Pro aspect). Frame them as a real
+     titanium phone: dark bezel, 1.5px outer border, inner
+     glass highlight, subtle lift shadow. */
+  .iphone{
+    --w: 300px; --h: calc(var(--w) * 2.174);
+    width: var(--w); height: var(--h);
+    position: relative;
+    background: linear-gradient(155deg,#3a3a3d 0%, #2a2a2c 40%, #1c1c1e 100%);
+    border-radius: 50px; padding: 4px;
+    box-shadow:
+      0 40px 80px -10px rgba(24,30,20,0.32),
+      0 14px 30px -8px rgba(24,30,20,0.22),
+      inset 0 1px 0 rgba(255,255,255,0.18),
+      inset 0 -1px 0 rgba(0,0,0,0.4);
+    flex-shrink:0;
+  }
+  .iphone .screen{
+    width:100%;height:100%;border-radius:46px;overflow:hidden;
+    background:var(--tf-bg-app);position:relative;
+  }
+  .iphone .screen img{width:100%;height:100%;object-fit:cover;object-position:center top}
+  .iphone .screen::after{
+    content:'';position:absolute;inset:0;pointer-events:none;border-radius:46px;
+    box-shadow:inset 0 0 0 1.5px rgba(255,255,255,0.06);
+  }
+
+  /* ═════ NAV ════════════════════════════════════════════ */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;height:72px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 40px;transition:background .35s var(--tf-ease),box-shadow .35s,border-color .35s;
+    border-bottom:1px solid transparent;
+  }
+  nav.scrolled{
+    background:rgba(241,244,238,0.86);backdrop-filter:blur(22px) saturate(1.4);
+    border-bottom-color:var(--tf-border);
+  }
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--tf-text)}
+  .brand-mark{
+    width:36px;height:36px;border-radius:9px;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 3px 10px rgba(24,30,20,0.14);
+    background:#EDEFEA;
+  }
+  .brand-mark img{width:100%;height:100%;object-fit:cover;display:block}
+  .brand-word{font-family:var(--tf-font-display);font-weight:800;font-size:20px;letter-spacing:.02em;text-transform:uppercase}
+  .nav-links{display:flex;gap:36px;list-style:none;align-items:center}
+  .nav-links a{color:var(--tf-text-mid);text-decoration:none;font-size:13.5px;font-weight:500;transition:color .2s;position:relative}
+  .nav-links a::after{content:'';position:absolute;left:0;right:100%;bottom:-4px;height:1.5px;background:var(--tf-green);transition:right .25s var(--tf-ease)}
+  .nav-links a:hover{color:var(--tf-green)}
+  .nav-links a:hover::after{right:0}
+  .nav-cta{
+    padding:11px 20px;background:var(--tf-text);color:#fff;border-radius:var(--tf-r-pill);
+    font-family:var(--tf-font-mono);font-size:11px;font-weight:500;letter-spacing:.18em;
+    text-transform:uppercase;text-decoration:none;transition:all .22s var(--tf-ease);
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .nav-cta:hover{background:var(--tf-green);transform:translateY(-1px)}
+  .nav-cta .arrow{transition:transform .22s}
+  .nav-cta:hover .arrow{transform:translateX(3px)}
+
+  /* ═════ HERO ═══════════════════════════════════════════
+     Editorial: big word-mark headline on left, ONE phone
+     right. Kicker bar, stats row below. Layered ridges. */
+  .hero{
+    position:relative;padding:140px 0 80px;overflow:hidden;
+    background:
+      radial-gradient(900px 600px at 85% 10%, rgba(42,100,66,0.14), transparent 60%),
+      radial-gradient(700px 500px at 10% 90%, rgba(232,90,43,0.05), transparent 60%),
+      var(--tf-bg);
+  }
+  .hero-ridges{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .hero-ridges svg{position:absolute;left:-5%;right:-5%;width:110%;bottom:0}
+  .hero-ridges .r3{opacity:.11}
+  .hero-ridges .r2{opacity:.07}
+  .hero-ridges .r1{opacity:.05}
+
+  .hero-inner{position:relative;display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center;min-height:680px}
+
+  .kicker-row{display:inline-flex;align-items:center;gap:12px;margin-bottom:28px}
+  .kicker-bar{width:28px;height:2px;background:var(--tf-earth)}
+  .kicker{font-family:var(--tf-font-mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--tf-text-muted);font-weight:500}
+  .kicker-dot{width:7px;height:7px;border-radius:50%;background:var(--tf-green);box-shadow:0 0 0 4px rgba(42,100,66,0.14);animation:pulse 2.6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+  .hero h1{
+    font-family:var(--tf-font-display);font-weight:800;
+    font-size:clamp(68px, 9.5vw, 148px);line-height:.88;letter-spacing:.005em;
+    text-transform:uppercase;margin-bottom:28px;color:var(--tf-text);
+  }
+  .hero h1 em{
+    font-style:italic;color:var(--tf-green);font-weight:700;display:block;
+    position:relative;
+  }
+  .hero h1 em::after{
+    content:'';display:inline-block;width:14px;height:14px;border-radius:50%;
+    background:var(--tf-orange);margin-left:8px;vertical-align:8%;
+    box-shadow:0 0 0 5px rgba(232,90,43,0.16);
+  }
+  .hero-sub{
+    font-family:var(--tf-font-body);font-weight:300;font-size:20px;line-height:1.6;
+    max-width:500px;color:var(--tf-text-mid);margin-bottom:40px;
+  }
+  .hero-cta{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+  .btn-store{display:block;transition:transform .25s var(--tf-ease),filter .25s}
+  .btn-store img{height:56px}
+  .btn-store:hover{transform:translateY(-2px);filter:drop-shadow(0 10px 20px rgba(24,30,20,.2))}
+  .hero-cta-note{
+    font-family:var(--tf-font-mono);font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--tf-text-muted);
+  }
+  .hero-cta-note strong{color:var(--tf-green);font-weight:500}
+
+  .hero-stats{display:flex;gap:48px;margin-top:56px;padding-top:36px;border-top:1px solid var(--tf-border)}
+  .hero-stat .num{font-family:var(--tf-font-display);font-weight:800;font-size:44px;line-height:1;color:var(--tf-text);letter-spacing:.01em}
+  .hero-stat .num em{color:var(--tf-orange);font-style:normal}
+  .hero-stat .num sup{font-family:var(--tf-font-app);font-weight:500;font-size:18px;color:var(--tf-text-muted);vertical-align:super;margin-left:1px}
+  .hero-stat .lbl{font-family:var(--tf-font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--tf-text-muted);margin-top:8px;font-weight:500}
+
+  .hero-phone-wrap{position:relative;display:flex;justify-content:center;align-items:center}
+  .hero-phone-wrap .iphone{--w:320px}
+  /* Decorative contour rings behind phone */
+  .hero-contours{position:absolute;width:680px;height:680px;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;opacity:.35}
+  .hero-contours svg{width:100%;height:100%}
+
+  /* Floating card */
+  .floater{
+    position:absolute;background:rgba(250,251,248,0.97);backdrop-filter:blur(12px);
+    border:1px solid var(--tf-border);border-radius:14px;padding:12px 14px;
+    box-shadow:var(--tf-shadow-md);display:flex;align-items:center;gap:12px;z-index:4;
+  }
+  .floater-1{top:60px;left:-20px;animation:floatY 5.5s ease-in-out infinite}
+  .floater-2{bottom:80px;right:-30px;animation:floatY 6.5s ease-in-out infinite -2s}
+  @keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .floater .dot{width:10px;height:10px;border-radius:50%;background:var(--tf-orange);box-shadow:0 0 0 4px rgba(232,90,43,.2);animation:pulse 2s ease-in-out infinite}
+  .floater .dot.g{background:var(--tf-green);box-shadow:0 0 0 4px rgba(42,100,66,.16)}
+  .floater .k{font-family:var(--tf-font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--tf-text-muted);font-weight:500}
+  .floater .v{font-family:var(--tf-font-display);font-weight:700;font-size:18px;color:var(--tf-text);margin-top:2px;letter-spacing:.01em}
+  .floater .v span{font-family:var(--tf-font-app);font-weight:500;font-size:11px;color:var(--tf-text-muted);margin-left:2px}
+
+  /* ═════ ETHOS BAND ════════════════════════════════════ */
+  .ethos{
+    background:var(--tf-forest);color:#E8EFE2;padding:44px 0;position:relative;
+    border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);
+    overflow:hidden;
+  }
+  .ethos::before{
+    content:'';position:absolute;inset:0;opacity:.12;pointer-events:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 100' preserveAspectRatio='none'><path d='M0,100 L0,60 L120,30 L260,55 L420,20 L580,50 L760,15 L940,45 L1120,20 L1300,50 L1440,30 L1440,100 Z' fill='%23ffffff'/></svg>");
+    background-size:cover;background-position:center bottom;
+  }
+  .ethos-row{
+    position:relative;display:flex;align-items:center;justify-content:center;gap:44px;flex-wrap:wrap;
+  }
+  .ethos-item{
+    font-family:var(--tf-font-display);font-weight:700;font-size:clamp(22px,2.4vw,34px);
+    text-transform:uppercase;letter-spacing:.01em;line-height:1;
+  }
+  .ethos-item em{font-style:italic;color:var(--tf-orange-hot);font-weight:600}
+  .ethos-sep{
+    width:22px;height:22px;flex-shrink:0;opacity:.9;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .ethos-sep svg{width:100%;height:100%}
+
+  /* ═════ SECTION — "BUILT FOR RIDERS" ══════════════════ */
+  section{position:relative}
+  .sect-head{display:grid;grid-template-columns:.9fr 1fr;gap:80px;align-items:end;margin-bottom:72px}
+  .sect-head h2{
+    font-family:var(--tf-font-display);font-weight:800;
+    font-size:clamp(48px, 6.2vw, 96px);line-height:.92;letter-spacing:.005em;
+    text-transform:uppercase;
+  }
+  .sect-head h2 em{color:var(--tf-orange);font-style:normal}
+  .sect-head h2 .g{color:var(--tf-green);font-style:italic;font-weight:700}
+  .sect-head p{font-size:17px;line-height:1.7;color:var(--tf-text-mid);max-width:460px}
+
+  .features{padding:120px 0}
+
+  /* Feature row = screenshot | text, alternating */
+  .feat-row{
+    display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
+    padding:80px 0;border-top:1px solid var(--tf-border);
+  }
+  .feat-row:first-of-type{border-top:none;padding-top:0}
+  .feat-row.reverse .feat-visual{order:2}
+  .feat-visual{display:flex;justify-content:center;position:relative}
+  .feat-visual .iphone{--w:280px}
+
+  .feat-num{
+    display:inline-block;font-family:var(--tf-font-mono);font-size:11px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--tf-orange);font-weight:500;margin-bottom:20px;
+  }
+  .feat-num::before{content:'';display:inline-block;width:24px;height:1.5px;background:var(--tf-orange);vertical-align:middle;margin-right:12px}
+  .feat-t{
+    font-family:var(--tf-font-display);font-weight:800;font-size:clamp(40px, 4.5vw, 64px);
+    line-height:.92;letter-spacing:.005em;text-transform:uppercase;margin-bottom:20px;
+  }
+  .feat-t em{color:var(--tf-green);font-style:italic;font-weight:700;display:inline}
+  .feat-p{font-size:17px;line-height:1.7;color:var(--tf-text-mid);max-width:480px;margin-bottom:24px}
+  .feat-list{list-style:none;display:flex;flex-direction:column;gap:12px;margin-top:28px;max-width:460px}
+  .feat-list li{
+    display:flex;gap:14px;align-items:flex-start;
+    font-size:15px;line-height:1.5;color:var(--tf-text-dim);padding-top:12px;border-top:1px solid var(--tf-border);
+  }
+  .feat-list li:first-child{border-top:none;padding-top:0}
+  .feat-list .k{font-family:var(--tf-font-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--tf-text-muted);min-width:90px;padding-top:3px;flex-shrink:0;font-weight:500}
+
+  /* Decorative ring behind feat phones */
+  .feat-ring{position:absolute;width:360px;height:360px;border-radius:50%;border:1px solid var(--tf-border);z-index:-1}
+  .feat-ring.g{border-color:rgba(42,100,66,0.16);width:420px;height:420px}
+
+  /* ═════ STATS DARK BAND ═══════════════════════════════ */
+  .stats{
+    background:linear-gradient(135deg,#162C1E 0%, #1E3828 55%, #2A2016 100%);
+    color:#fff;padding:100px 0;position:relative;overflow:hidden;
+  }
+  .stats::before{
+    content:'';position:absolute;inset:0;opacity:.22;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 400' preserveAspectRatio='none'><path d='M0,260 L180,180 L320,220 L480,120 L680,200 L860,100 L1040,180 L1220,130 L1440,200 L1440,400 L0,400 Z' fill='%23000'/><path d='M0,320 L160,260 L340,290 L520,220 L700,270 L880,210 L1060,260 L1220,200 L1440,250 L1440,400 L0,400 Z' fill='%23000' opacity='0.4'/></svg>");
+    background-size:cover;background-position:center;
+  }
+  .stats-kicker{text-align:center;margin-bottom:48px;position:relative}
+  .stats-kicker .k{font-family:var(--tf-font-mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.55);font-weight:500}
+  .stats-grid{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+  .stat-big{padding:0 32px;position:relative}
+  .stat-big + .stat-big::before{content:'';position:absolute;left:0;top:10%;bottom:10%;width:1px;background:rgba(255,255,255,.12)}
+  .stat-big .n{font-family:var(--tf-font-display);font-weight:800;font-size:clamp(60px, 7vw, 92px);line-height:.85;letter-spacing:.01em}
+  .stat-big .n em{color:var(--tf-orange-hot);font-style:normal}
+  .stat-big .n sub{font-size:.5em;color:rgba(255,255,255,.45);font-weight:500;vertical-align:baseline}
+  .stat-big .l{font-family:var(--tf-font-mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-top:18px;font-weight:500}
+  .stat-big .sub{font-family:var(--tf-font-body);font-size:13px;line-height:1.5;color:rgba(255,255,255,.7);margin-top:10px;font-weight:300}
+
+  /* ═════ GALLERY ═══════════════════════════════════════
+     Horizontal rail of real phones. */
+  .gallery{padding:120px 0 100px;background:var(--tf-bg-2);border-top:1px solid var(--tf-border);border-bottom:1px solid var(--tf-border)}
+  .gallery .wrap .sect-head{margin-bottom:56px}
+  .gallery-rail{
+    display:flex;gap:28px;overflow-x:auto;padding:30px 40px 50px;scroll-snap-type:x mandatory;
+    scrollbar-width:none;
+  }
+  .gallery-rail::-webkit-scrollbar{display:none}
+  .g-item{flex:0 0 auto;scroll-snap-align:center;display:flex;flex-direction:column;align-items:center;gap:20px}
+  .g-item .iphone{--w:250px}
+  .g-meta{text-align:center;max-width:250px}
+  .g-meta .k{font-family:var(--tf-font-mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--tf-text-muted);font-weight:500;margin-bottom:6px}
+  .g-meta .t{font-family:var(--tf-font-display);font-weight:700;font-size:18px;letter-spacing:.01em;text-transform:uppercase;color:var(--tf-text)}
+  .gallery-hint{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:20px;color:var(--tf-text-muted);font-family:var(--tf-font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase}
+
+  /* ═════ CREW / RADAR — dark scene ═════════════════════ */
+  .crew{padding:130px 0;background:#0D1A11;color:#E8EFE2;position:relative;overflow:hidden}
+  .crew::before{
+    content:'';position:absolute;inset:0;opacity:.3;
+    background:radial-gradient(700px 500px at 80% 30%, rgba(232,90,43,0.18), transparent 60%),
+               radial-gradient(600px 400px at 10% 80%, rgba(42,100,66,0.22), transparent 60%);
+  }
+  .crew-grid{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+  .crew-text h2{
+    font-family:var(--tf-font-display);font-weight:800;font-size:clamp(52px, 6.5vw, 92px);
+    line-height:.92;text-transform:uppercase;letter-spacing:.005em;color:#fff;margin-bottom:24px;
+  }
+  .crew-text h2 em{color:var(--tf-orange-hot);font-style:italic;font-weight:700}
+  .crew-text p{font-size:17px;line-height:1.7;color:#B0C4AB;max-width:460px;margin-bottom:40px}
+  .crew-kicker{margin-bottom:22px}
+  .crew-kicker .kicker{color:rgba(255,255,255,.55)}
+  .crew-kicker .kicker-bar{background:var(--tf-orange)}
+
+  .crew-visual{position:relative;height:640px;display:flex;justify-content:center;align-items:center}
+  .crew-visual .iphone{--w:290px}
+  /* Radar pulse rings */
+  .radar-ring{position:absolute;top:50%;left:50%;border-radius:50%;border:1px solid rgba(232,90,43,0.3);transform:translate(-50%,-50%);animation:radar 3s ease-out infinite}
+  .radar-ring:nth-child(2){animation-delay:-1s}
+  .radar-ring:nth-child(3){animation-delay:-2s}
+  @keyframes radar{0%{width:120px;height:120px;opacity:1}100%{width:720px;height:720px;opacity:0}}
+  /* Rider pills */
+  .rider{
+    position:absolute;display:flex;align-items:center;gap:12px;padding:10px 16px 10px 10px;
+    background:rgba(250,251,248,0.97);backdrop-filter:blur(10px);
+    border-radius:var(--tf-r-pill);box-shadow:var(--tf-shadow-md);
+    animation:floatR 6s ease-in-out infinite;z-index:3;
+  }
+  .rider .av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--tf-font-app);font-weight:700;font-size:12px;flex-shrink:0}
+  .rider .n{font-family:var(--tf-font-app);font-weight:700;font-size:13px;color:var(--tf-text);line-height:1.1}
+  .rider .m{font-family:var(--tf-font-mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--tf-text-muted);margin-top:3px;font-weight:500}
+  .rider .live{width:6px;height:6px;border-radius:50%;background:var(--tf-orange);margin-left:8px;box-shadow:0 0 0 4px rgba(232,90,43,0.25);animation:pulse 1.8s ease-in-out infinite}
+  .rider-1{top:60px;left:10px}
+  .rider-2{top:230px;right:0;animation-delay:-1.5s}
+  .rider-3{bottom:180px;left:-20px;animation-delay:-3s}
+  .rider-4{bottom:40px;right:30px;animation-delay:-2.2s}
+  @keyframes floatR{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+  /* ═════ TESTIMONIAL / QUOTE BAND ══════════════════════ */
+  .quote{padding:100px 0;background:var(--tf-bg);text-align:center;position:relative;overflow:hidden}
+  .quote-mark{font-family:var(--tf-font-display);font-size:140px;line-height:1;color:var(--tf-orange-pale);margin-bottom:-20px;font-weight:800}
+  .quote blockquote{
+    font-family:var(--tf-font-display);font-weight:600;font-style:italic;
+    font-size:clamp(26px, 3.2vw, 44px);line-height:1.2;
+    color:var(--tf-text);max-width:880px;margin:0 auto 30px;
+  }
+  .quote blockquote em{color:var(--tf-orange);font-style:italic;font-weight:700}
+  .quote cite{font-family:var(--tf-font-mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--tf-text-muted);font-style:normal}
+  .quote cite strong{color:var(--tf-green);font-weight:500}
+
+  /* ═════ DOWNLOAD CTA ══════════════════════════════════ */
+  .download{
+    padding:140px 0 120px;background:linear-gradient(145deg,#DAE3D2 0%, #C8D6C0 60%, #B8CCB0 100%);
+    position:relative;overflow:hidden;text-align:center;border-top:1px solid var(--tf-border);
+  }
+  .download h2{
+    font-family:var(--tf-font-display);font-weight:800;font-size:clamp(64px, 9vw, 148px);
+    line-height:.88;letter-spacing:.005em;text-transform:uppercase;margin-bottom:24px;position:relative;z-index:2;
+  }
+  .download h2 em{color:var(--tf-orange);font-style:italic;font-weight:700}
+  .download p{font-size:20px;line-height:1.55;color:var(--tf-text-dim);max-width:540px;margin:0 auto 48px;position:relative;z-index:2}
+  .download-cta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;position:relative;z-index:2}
+  .download .kicker-row{display:inline-flex;margin-bottom:32px;justify-content:center}
+  .dl-contour{position:absolute;top:50%;transform:translateY(-50%);pointer-events:none;opacity:.22}
+  .dl-contour.l{left:-120px}.dl-contour.r{right:-120px}
+  .dl-contour svg{width:540px;height:540px}
+
+  /* ═════ FOOTER ════════════════════════════════════════ */
+  footer{background:var(--tf-forest);color:#B0C4AB;padding:80px 0 30px;position:relative;overflow:hidden}
+  .foot-ridges{position:absolute;left:0;right:0;bottom:0;pointer-events:none;opacity:.08}
+  .foot-ridges svg{width:100%;display:block}
+  .foot-grid{position:relative;display:grid;grid-template-columns:2.2fr 1fr 1fr;gap:60px;margin-bottom:60px}
+  .foot-brand .brand-word{color:#fff}
+  .foot-brand .brand-mark{background:#EDEFEA}
+  .foot-brand p{font-size:14px;line-height:1.7;color:#7A9478;margin-top:20px;max-width:340px}
+  .foot-badge{margin-top:22px;display:inline-block}
+  .foot-badge img{height:44px}
+  .foot-col h4{font-family:var(--tf-font-mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#7A9478;margin-bottom:18px;font-weight:500}
+  .foot-col a{display:block;color:#CCD8C8;text-decoration:none;font-size:14px;padding:7px 0;transition:color .2s}
+  .foot-col a:hover{color:var(--tf-orange-hot)}
+  .foot-bottom{position:relative;border-top:1px solid rgba(255,255,255,.08);padding-top:28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-family:var(--tf-font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#7A9478}
+
+  /* ═════ RESPONSIVE ════════════════════════════════════ */
+  @media (max-width: 960px){
+    .hero{padding:110px 0 60px}
+    .hero-inner{grid-template-columns:1fr;gap:60px;min-height:auto}
+    .hero-phone-wrap{order:2}
+    .nav-links{display:none}
+    .sect-head{grid-template-columns:1fr;gap:24px}
+    .feat-row{grid-template-columns:1fr;gap:48px;padding:60px 0}
+    .feat-row.reverse .feat-visual{order:0}
+    .stats-grid{grid-template-columns:1fr 1fr;gap:40px 0}
+    .stat-big:nth-child(3)::before{display:none}
+    .crew-grid{grid-template-columns:1fr;gap:60px}
+    .foot-grid{grid-template-columns:1fr 1fr;gap:40px}
+    .hero-stats{flex-wrap:wrap;gap:28px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ═════ NAV ═════ -->
+<nav id="nav">
+  <a href="#" class="brand">
+    <span class="brand-mark">
+      <img src="assets/logo-mark.svg" alt="TrailFreaks logo">
+    </span>
+    <span class="brand-word">TrailFreaks</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#gallery">The App</a></li>
+    <li><a href="#crew">Crew</a></li>
+    <li><a href="#download">Download</a></li>
+  </ul>
+  <a href="#download" class="nav-cta">Get the App <span class="arrow">→</span></a>
+</nav>
+
+<!-- ═════ HERO ═════ -->
+<section class="hero">
+  <div class="hero-ridges">
+    <svg class="r3" viewBox="0 0 1440 380" preserveAspectRatio="none"><path d="M0,380 L0,200 L120,140 L280,180 L420,100 L580,160 L720,80 L900,140 L1080,90 L1260,160 L1440,120 L1440,380 Z" fill="#2A6442"/></svg>
+    <svg class="r2" viewBox="0 0 1440 280" preserveAspectRatio="none"><path d="M0,280 L0,160 L150,120 L310,180 L480,100 L620,160 L780,130 L960,180 L1120,120 L1280,170 L1440,140 L1440,280 Z" fill="#3A8056"/></svg>
+    <svg class="r1" viewBox="0 0 1440 200" preserveAspectRatio="none"><path d="M0,200 L0,100 L180,80 L360,130 L560,70 L760,120 L960,90 L1180,140 L1440,100 L1440,200 Z" fill="#5EA070"/></svg>
+  </div>
+
+  <div class="wrap hero-inner">
+    <div class="hero-text">
+      <div class="kicker-row">
+        <span class="kicker-bar"></span>
+        <span class="kicker">MTB · iOS</span>
+        <span class="kicker-dot"></span>
+      </div>
+      <h1>Find your<br><em>trail.</em></h1>
+      <p class="hero-sub">TrailFreaks is the iOS app for mountain bikers who want more than a map — discover trails, connect with riders nearby, and plan group rides together.</p>
+      <div class="hero-cta">
+        <a href="#download" class="btn-store">
+          <img src="assets/app-store-black.svg" alt="Download on the App Store">
+        </a>
+        <div class="hero-cta-note">
+          <strong>iOS 16+</strong> · iPhone<br>
+          <span style="font-family:var(--tf-font-body);font-size:13px;letter-spacing:0;text-transform:none;color:var(--tf-text-light);font-weight:300">Built for riders.</span>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="num">iOS</div>
+          <div class="lbl">iPhone · iOS 16+</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">GPX</div>
+          <div class="lbl">Import · Export · Share</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num"><em>Offline</em></div>
+          <div class="lbl">Maps that work off-grid</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-phone-wrap">
+      <div class="hero-contours">
+        <svg viewBox="0 0 680 680"><g fill="none" stroke="#2A6442" stroke-width="1"><circle cx="340" cy="340" r="320"/><circle cx="340" cy="340" r="260"/><circle cx="340" cy="340" r="200"/><circle cx="340" cy="340" r="140"/></g></svg>
+      </div>
+      <div class="iphone">
+        <div class="screen"><img src="assets/screenshots/rout_details.png" alt="TrailFreaks trail detail"></div>
+      </div>
+      <div class="floater floater-1">
+        <div class="dot g"></div>
+        <div>
+          <div class="k">Distance</div>
+          <div class="v">23.4<span>km</span></div>
+        </div>
+      </div>
+      <div class="floater floater-2">
+        <div class="dot"></div>
+        <div>
+          <div class="k">Recording</div>
+          <div class="v">00:42:18</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ ETHOS BAND ═════ -->
+<div class="ethos">
+  <div class="wrap ethos-row">
+    <div class="ethos-item">Find <em>trails.</em></div>
+    <div class="ethos-sep" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 4 L21 20 L3 20 Z" fill="#E85A2B"/></svg>
+    </div>
+    <div class="ethos-item">Record <em>rides.</em></div>
+    <div class="ethos-sep" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 4 L21 20 L3 20 Z" fill="#E85A2B"/></svg>
+    </div>
+    <div class="ethos-item">Find your <em>crew.</em></div>
+  </div>
+</div>
+
+<!-- ═════ FEATURES ═════ -->
+<section class="features" id="features">
+  <div class="wrap">
+    <div class="sect-head">
+      <h2>Built for<br><span class="g">riders</span><em>.</em></h2>
+      <p>Four tools that turn your phone into the only thing you need in your jersey pocket. Discover the line, lay it down, plan the send, find your crew.</p>
+    </div>
+
+    <!-- DISCOVER -->
+    <div class="feat-row">
+      <div class="feat-visual">
+        <div class="feat-ring g"></div>
+        <div class="iphone"><div class="screen"><img src="assets/screenshots/discover_routs.png" alt="Discover routes"></div></div>
+      </div>
+      <div class="feat-text">
+        <div class="feat-num">01 — Discover</div>
+        <div class="feat-t">Find the<br><em>good dirt.</em></div>
+        <p class="feat-p">Browse official and community-imported routes near you. Filter by difficulty, distance, and elevation — tap any trail to see what you're in for.</p>
+        <ul class="feat-list">
+          <li><span class="k">Filter by</span><span>Difficulty · Distance · Elevation · Surface</span></li>
+          <li><span class="k">Map layers</span><span>Apple Maps · Hybrid · Satellite</span></li>
+          <li><span class="k">GPX</span><span>Import your own. Share official routes.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- RECORD -->
+    <div class="feat-row reverse">
+      <div class="feat-visual">
+        <div class="feat-ring"></div>
+        <div class="iphone"><div class="screen"><img src="assets/screenshots/record_ride.png" alt="Record ride"></div></div>
+      </div>
+      <div class="feat-text">
+        <div class="feat-num">02 — Record</div>
+        <div class="feat-t">Lay down<br><em>your line.</em></div>
+        <p class="feat-p">GPS recording with live distance, time, and elevation. Big orange REC button because your hands are on the bars and your eyes are on the trail.</p>
+        <ul class="feat-list">
+          <li><span class="k">Live stats</span><span>Distance · Time · Ascent</span></li>
+          <li><span class="k">Output</span><span>GPX export · Share to crew</span></li>
+          <li><span class="k">Battery</span><span>Optimized for all-day rides</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- GROUP RIDES -->
+    <div class="feat-row">
+      <div class="feat-visual">
+        <div class="feat-ring g"></div>
+        <div class="iphone"><div class="screen"><img src="assets/screenshots/schedual_ride.png" alt="Schedule ride"></div></div>
+      </div>
+      <div class="feat-text">
+        <div class="feat-num">03 — Group Rides</div>
+        <div class="feat-t">Plan the<br><em>send.</em></div>
+        <p class="feat-p">Pick a trail, pick a date, invite your crew. Meeting point, notes, group chat — everyone shows up to the right trailhead at the right time.</p>
+        <ul class="feat-list">
+          <li><span class="k">Invite</span><span>From your contacts, by handle</span></li>
+          <li><span class="k">Chat</span><span>Built-in group chat per ride</span></li>
+          <li><span class="k">Meeting</span><span>Pinned location, drop-in notes</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- RADAR -->
+    <div class="feat-row reverse">
+      <div class="feat-visual">
+        <div class="feat-ring"></div>
+        <div class="iphone"><div class="screen"><img src="assets/screenshots/radar.png" alt="Radar"></div></div>
+      </div>
+      <div class="feat-text">
+        <div class="feat-num">04 — Radar</div>
+        <div class="feat-t">Stop riding<br><em>alone.</em></div>
+        <p class="feat-p">See other TrailFreakers nearby. Toggle sharing, ride up, make a new friend. Your crew was always out there — Radar just puts them on the map.</p>
+        <ul class="feat-list">
+          <li><span class="k">Privacy</span><span>Opt-in · off by default · one-tap toggle</span></li>
+          <li><span class="k">Radius</span><span>10, 25, or 50 km around you</span></li>
+          <li><span class="k">Connect</span><span>Follow, invite to next ride</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ STATS DARK BAND ═════ -->
+<section class="stats">
+  <div class="wrap">
+    <div class="stats-kicker"><span class="k">— How we build it —</span></div>
+    <div class="stats-grid">
+      <div class="stat-big">
+        <div class="n">01</div>
+        <div class="l">By riders</div>
+        <div class="sub">Built by people who own muddy kneepads — not growth hackers.</div>
+      </div>
+      <div class="stat-big">
+        <div class="n">02</div>
+        <div class="l">One-hand friendly</div>
+        <div class="sub">Big buttons, clear hierarchy. Use it with gloves on, at speed.</div>
+      </div>
+      <div class="stat-big">
+        <div class="n">03</div>
+        <div class="l">Privacy first</div>
+        <div class="sub">Location sharing is opt-in. Your rides belong to you.</div>
+      </div>
+      <div class="stat-big">
+        <div class="n">04</div>
+        <div class="l">Your data, your GPX</div>
+        <div class="sub">Import and export freely. Nothing locked in.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ GALLERY ═════ -->
+<section class="gallery" id="gallery">
+  <div class="wrap">
+    <div class="sect-head">
+      <h2>Every screen,<br>every <em>ride.</em></h2>
+      <p>This is the real app, not a mockup. Scroll through — every screen you'll touch, from the first sign-in to the top of the climb.</p>
+    </div>
+  </div>
+  <div class="gallery-rail">
+    <div class="g-item">
+      <div class="iphone"><div class="screen"><img src="assets/screenshots/sign_in.png" alt=""></div></div>
+      <div class="g-meta"><div class="k">01 · Auth</div><div class="t">Welcome back</div></div>
+    </div>
+    <div class="g-item">
+      <div class="iphone"><div class="screen"><img src="assets/screenshots/discover_routs.png" alt=""></div></div>
+      <div class="g-meta"><div class="k">02 · Discover</div><div class="t">Map + list</div></div>
+    </div>
+    <div class="g-item">
+      <div class="iphone"><div class="screen"><img src="assets/screenshots/search_location.png" alt=""></div></div>
+      <div class="g-meta"><div class="k">03 · Search</div><div class="t">Nearby radius</div></div>
+    </div>
+    <div class="g-item">
+      <div class="iphone"><div class="screen"><img src="assets/screenshots/saved_routs.png" alt=""></div></div>
+      <div class="g-meta"><div class="k">04 · My Routes</div><div class="t">Saved trails</div></div>
+    </div>
+    <div class="g-item">
+      <div class="iphone"><div class="screen"><img src="assets/screenshots/rout_details.png" alt=""></div></div>
+      <div class="g-meta"><div class="k">05 · Trail detail</div><div class="t">Stats + elevation</div></div>
+    </div>
+    <div class="g-item">
+      <div class="iphone"><div class="screen"><img src="assets/screenshots/record_ride.png" alt=""></div></div>
+      <div class="g-meta"><div class="k">06 · Record</div><div class="t">Live GPS</div></div>
+    </div>
+    <div class="g-item">
+      <div class="iphone"><div class="screen"><img src="assets/screenshots/create_new_ride.png" alt=""></div></div>
+      <div class="g-meta"><div class="k">07 · New ride</div><div class="t">Group planner</div></div>
+    </div>
+    <div class="g-item">
+      <div class="iphone"><div class="screen"><img src="assets/screenshots/schedual_ride.png" alt=""></div></div>
+      <div class="g-meta"><div class="k">08 · Scheduled</div><div class="t">Ride detail</div></div>
+    </div>
+    <div class="g-item">
+      <div class="iphone"><div class="screen"><img src="assets/screenshots/upcoming_rides.png" alt=""></div></div>
+      <div class="g-meta"><div class="k">09 · Upcoming</div><div class="t">Riders + RSVPs</div></div>
+    </div>
+    <div class="g-item">
+      <div class="iphone"><div class="screen"><img src="assets/screenshots/radar.png" alt=""></div></div>
+      <div class="g-meta"><div class="k">10 · Radar</div><div class="t">Crew finder</div></div>
+    </div>
+    <div style="flex:0 0 40px"></div>
+  </div>
+  <div class="gallery-hint">← Drag to scroll →</div>
+</section>
+
+<!-- ═════ CREW / RADAR DARK SCENE ═════ -->
+<section class="crew" id="crew">
+  <div class="wrap">
+    <div class="crew-grid">
+      <div class="crew-text">
+        <div class="kicker-row crew-kicker">
+          <span class="kicker-bar"></span>
+          <span class="kicker">Radar · Crew · Group Rides</span>
+        </div>
+        <h2>Your crew,<br>on the<br><em>map.</em></h2>
+        <p>Flip on Radar and see other riders in the area. Follow your regulars, pick up new faces, make every ride a crew ride. Privacy-first: Radar is off until you turn it on.</p>
+        <a href="#download" class="btn-store" style="display:inline-block"><img src="assets/app-store-white.svg" alt="App Store" style="height:54px"></a>
+      </div>
+      <div class="crew-visual">
+        <div class="radar-ring"></div>
+        <div class="radar-ring"></div>
+        <div class="radar-ring"></div>
+        <div class="iphone"><div class="screen"><img src="assets/screenshots/radar.png" alt=""></div></div>
+        <div class="rider rider-1"><div class="av" style="background:#2A6442">YK</div><div><div class="n">@yaro.k</div><div class="m">Live · 2.1 km</div></div><div class="live"></div></div>
+        <div class="rider rider-2"><div class="av" style="background:#E85A2B">MT</div><div><div class="n">@maya.t</div><div class="m">Riding · Naftali</div></div><div class="live"></div></div>
+        <div class="rider rider-3"><div class="av" style="background:#587860">DL</div><div><div class="n">@dan.l</div><div class="m">Ride day · Sat 8:00</div></div></div>
+        <div class="rider rider-4"><div class="av" style="background:#8A5A38">RS</div><div><div class="n">@rina.s</div><div class="m">Invited you</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ QUOTE ═════ -->
+<section class="quote">
+  <div class="wrap">
+    <div class="quote-mark">"</div>
+    <blockquote>TrailFreaks is the first app that feels like it was <em>built in the parking lot</em> before a ride, not in a boardroom after one.</blockquote>
+    <cite>Maya T. · <strong>5-star review</strong> · App Store</cite>
+  </div>
+</section>
+
+<!-- ═════ DOWNLOAD CTA ═════ -->
+<section class="download" id="download">
+  <svg class="dl-contour l" viewBox="0 0 300 300"><g fill="none" stroke="#2A6442" stroke-width="1"><ellipse cx="150" cy="150" rx="140" ry="80"/><ellipse cx="150" cy="150" rx="115" ry="65"/><ellipse cx="150" cy="150" rx="88" ry="50"/><ellipse cx="150" cy="150" rx="60" ry="34"/><ellipse cx="150" cy="150" rx="32" ry="18"/></g></svg>
+  <svg class="dl-contour r" viewBox="0 0 300 300"><g fill="none" stroke="#2A6442" stroke-width="1"><ellipse cx="150" cy="150" rx="140" ry="80"/><ellipse cx="150" cy="150" rx="115" ry="65"/><ellipse cx="150" cy="150" rx="88" ry="50"/><ellipse cx="150" cy="150" rx="60" ry="34"/><ellipse cx="150" cy="150" rx="32" ry="18"/></g></svg>
+  <div class="wrap">
+    <div class="kicker-row">
+      <span class="kicker-bar"></span>
+      <span class="kicker">iOS 16+ · iPhone</span>
+      <span class="kicker-dot"></span>
+    </div>
+    <h2>Stop riding<br><em>alone.</em></h2>
+    <p>Your trails are waiting. Download TrailFreaks, find your trails, find your crew, and plan your next ride — all from your iPhone.</p>
+    <div class="download-cta">
+      <a href="#" class="btn-store"><img src="assets/app-store-black.svg" alt="Download on the App Store"></a>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ FOOTER ═════ -->
+<footer>
+  <div class="foot-ridges">
+    <svg viewBox="0 0 1440 200" preserveAspectRatio="none"><path d="M0,200 L0,120 L180,90 L360,140 L560,70 L760,120 L960,90 L1180,140 L1440,100 L1440,200 Z" fill="#fff"/></svg>
+    <svg viewBox="0 0 1440 140" preserveAspectRatio="none" style="opacity:0.5"><path d="M0,140 L0,80 L220,60 L420,100 L620,50 L840,90 L1080,60 L1280,100 L1440,70 L1440,140 Z" fill="#fff"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="#" class="brand">
+          <span class="brand-mark">
+            <img src="assets/logo-mark.svg" alt="TrailFreaks logo">
+          </span>
+          <span class="brand-word">TrailFreaks</span>
+        </a>
+        <p>Find trails. Find your crew. Built for riders.</p>
+        <a href="#download" class="foot-badge"><img src="assets/app-store-white.svg" alt="App Store"></a>
+      </div>
+      <div class="foot-col">
+        <h4>Product</h4>
+        <a href="#features">Features</a>
+        <a href="#gallery">Screens</a>
+        <a href="#crew">Radar</a>
+        <a href="#">Changelog</a>
+      </div>
+      <div class="foot-col">
+        <h4>Legal</h4>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div>© 2026 TrailFreaks</div>
+      <div>Made by riders, for riders</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const nav = document.getElementById('nav');
+  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 30);
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+</script>
+
+</body>
+</html>

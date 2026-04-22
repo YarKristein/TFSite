@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  
+  <rect width="1024" height="1024" fill="#EDEFEA"></rect>
+  <text x="512" y="240" font-family="&#39;IBM Plex Mono&#39;, ui-monospace, Menlo, monospace" font-weight="500" font-size="74" text-anchor="middle" fill="#2A6442" letter-spacing="14">TRAILFREAKS</text>
+  <line x1="340" y1="300" x2="684" y2="300" stroke="#2A6442" stroke-width="3"></line>
+  <circle cx="760" cy="420" r="40" fill="#E85A2B"></circle>
+  <path d="M-20 620 L180 460 L360 580 L540 420 L740 560 L1044 460 L1044 1044 L-20 1044 Z" fill="#2A6442" opacity="0.3"></path>
+  <path d="M-20 760 L160 620 L340 720 L520 580 L700 700 L880 600 L1044 720 L1044 1044 L-20 1044 Z" fill="#2A6442" opacity="0.6"></path>
+  <path d="M-20 880 L200 780 L400 860 L600 760 L820 840 L1044 780 L1044 1044 L-20 1044 Z" fill="#2A6442"></path>
+</svg>
