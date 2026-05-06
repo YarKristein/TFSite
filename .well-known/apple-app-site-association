@@ -1,0 +1,12 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["4GP454VPPU.Yaroslav.Kristein.TrailFreaks"],
+        "components": [
+          { "/": "/auth/confirm" }
+        ]
+      }
+    ]
+  }
+}
